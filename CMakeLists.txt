@@ -3,8 +3,8 @@ project(libmotioncapture)
 
 # define some options
 option(LIBMOTIONCAPTURE_BUILD_PYTHON_BINDINGS "Generate Python Bindings" ON)
-option(LIBMOTIONCAPTURE_ENABLE_QUALISYS "Enable Qualisys" ON)
-option(LIBMOTIONCAPTURE_ENABLE_OPTITRACK "Enable Optitrack" ON)
+option(LIBMOTIONCAPTURE_ENABLE_QUALISYS "Enable Qualisys" OFF)
+option(LIBMOTIONCAPTURE_ENABLE_OPTITRACK "Enable Optitrack" OFF)
 option(LIBMOTIONCAPTURE_ENABLE_OPTITRACK_CLOSED_SOURCE "Enable Optitrack (Closed Source)" OFF)
 option(LIBMOTIONCAPTURE_ENABLE_VICON "Enable Vicon" ON)
 option(LIBMOTIONCAPTURE_ENABLE_VRPN "Enable VRPN" ON)
@@ -15,18 +15,18 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(Boost 1.5 COMPONENTS system REQUIRED) # for optitrack
-add_definitions(
-  -DBOOST_DATE_TIME_NO_LIB
-  -DBOOST_REGEX_NO_LIB
-  -D_BUILD_STATIC_LIB
-)
+# find_package(Boost 1.5 COMPONENTS system REQUIRED) # for optitrack
+# add_definitions(
+#   -DBOOST_DATE_TIME_NO_LIB
+#   -DBOOST_REGEX_NO_LIB
+#   -D_BUILD_STATIC_LIB
+# )
 
 find_package(Eigen3 REQUIRED)
 
 set(VICON_SDK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/deps/vicon-datastream-sdk/)
 set(QUALISYS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/deps/qualisys_cpp_sdk/)
-set(NATNET_SDK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/deps/NatNetSDKCrossplatform/)
+# set(NATNET_SDK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/deps/NatNetSDKCrossplatform/)
 set(VRPN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/deps/vrpn/)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -75,25 +75,25 @@ if (LIBMOTIONCAPTURE_ENABLE_OPTITRACK)
   )
 endif()
 
-if (LIBMOTIONCAPTURE_ENABLE_OPTITRACK_CLOSED_SOURCE)
-  add_definitions(-DENABLE_OPTITRACK_CLOSED_SOURCE)
-  add_subdirectory(deps/NatNetSDKCrossplatform EXCLUDE_FROM_ALL)
-  set(my_include_directories
-    ${my_include_directories}
-    ${NATNET_SDK_DIR}/include
-  )
-  set(my_files
-    ${my_files}
-    src/optitrack_closed_source.cpp
-  )
-  set(my_link_directories
-    ${NATNET_SDK_DIR}/lib/ubuntu
-  )
-  set(my_libraries
-    ${my_libraries}
-    NatNet
-  )
-endif()
+# if (LIBMOTIONCAPTURE_ENABLE_OPTITRACK_CLOSED_SOURCE)
+#   add_definitions(-DENABLE_OPTITRACK_CLOSED_SOURCE)
+#   add_subdirectory(deps/NatNetSDKCrossplatform EXCLUDE_FROM_ALL)
+#   set(my_include_directories
+#     ${my_include_directories}
+#     ${NATNET_SDK_DIR}/include
+#   )
+#   set(my_files
+#     ${my_files}
+#     src/optitrack_closed_source.cpp
+#   )
+#   set(my_link_directories
+#     ${NATNET_SDK_DIR}/lib/ubuntu
+#   )
+#   set(my_libraries
+#     ${my_libraries}
+#     NatNet
+#   )
+# endif()
 
 if (LIBMOTIONCAPTURE_ENABLE_QUALISYS)
   add_definitions(-DENABLE_QUALISYS)
@@ -141,12 +141,14 @@ add_library(libmotioncapture
 )
 
 ## Specify libraries to link a library or executable target against
-target_link_directories(libmotioncapture PUBLIC
-  ${my_link_directories}
-)
+## link_directories(libmotioncapture PUBLIC
+##   ${my_link_directories}
+## )
+
 target_link_libraries(libmotioncapture
   ${my_libraries}
 )
+
 set_property(TARGET libmotioncapture PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 if (LIBMOTIONCAPTURE_BUILD_PYTHON_BINDINGS)
